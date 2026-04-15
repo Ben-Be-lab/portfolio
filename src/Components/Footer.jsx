@@ -7,7 +7,7 @@ const Footer = () => {
         
         
         <div>
-          <h2 className="text-xl font-bold italic">MYLOGO</h2>
+        
           <p className="text-gray-400 mt-2 text-sm">
             © 2026 Built with React & Tailwind CSS.
           </p>
@@ -15,8 +15,8 @@ const Footer = () => {
 
       
         <div className="flex gap-8 text-gray-400">
-          <a href="#" className="hover:text-white transition">GitHub</a>
-          <a href="#" className="hover:text-white transition">LinkedIn</a>
+          <a href="" className="hover:text-white transition">GitHub</a>
+          <a href="https://www.linkedin.com/in/asifiwe-ben-bosco-a816a5367/" className="hover:text-white transition">LinkedIn</a>
           <a href="#" className="hover:text-white transition">Twitter</a>
         </div>
         

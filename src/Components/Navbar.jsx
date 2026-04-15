@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom' // Ensure this is installed
+import { Link } from 'react-router-dom' 
 
 const Navbar = () => {
     return (

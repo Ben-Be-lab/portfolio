@@ -17,8 +17,33 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// 🔒 Bulletproof Production CORS Configuration
+const allowedOrigins = [
+  'http://localhost:5173', // Vite local development
+  'http://localhost:3000', // Alternative local development
+  'https://portfolio-git-main-bens-projects-c05f07fd.vercel.app' // Your live Vercel frontend deployment
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests, or Postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Blocked by CORS policy: Origin not allowed.'));
+    }
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// ⚡ Handle Preflight Requests Globally
+app.options('*', cors());
+
 // Middleware
-app.use(cors()); 
 app.use(express.json()); 
 
 // 🎯 Core API Route to process Portfolio Contact Form submissions

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FaEnvelope, FaMapMarkerAlt, FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 
-const API_URL = 'http://localhost:5000/api/contact';
-
+// In your React Contact component:
+const API_URL = 'https://your-backend-name.onrender.com/api/contact';
 const Contact = () => {
 
   const [formData, setFormData] = useState({

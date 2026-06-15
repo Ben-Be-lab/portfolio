@@ -6,31 +6,16 @@ import nodemailer from 'nodemailer';
 dotenv.config();
 const app = express();
 
-// 🛠️ Configure Nodemailer with fallback values directly in the code
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: Number(process.env.SMTP_PORT || 465),
-  secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465' || true, 
-  auth: {
-    user: process.env.SMTP_USER || 'benasifiwe5@gmail.com',
-    pass: process.env.SMTP_PASS, // Keep this out of the code for security!
-  },
-});
-
-
-
 // 🔒 Bulletproof Production CORS Configuration
 const allowedOrigins = [
-  'http://localhost:5173', // Vite local development
-  'http://localhost:3000', // Alternative local development
-  'https://portfolio-git-main-bens-projects-c05f07fd.vercel.app' // Your live Vercel frontend deployment
+  'http://localhost:5173', 
+  'http://localhost:3000', 
+  'https://portfolio-git-main-bens-projects-c05f07fd.vercel.app'
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests, or Postman)
     if (!origin) return callback(null, true);
-    
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -42,10 +27,7 @@ app.use(cors({
   credentials: true
 }));
 
-// ⚡ Handle Preflight Requests Globally
 app.options('*', cors());
-
-// Middleware
 app.use(express.json()); 
 
 // 🎯 Core API Route to process Portfolio Contact Form submissions
@@ -53,16 +35,26 @@ app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
 
-    // Validation Guard - Stops bad requests instantly
     if (!name || !email || !message) {
       return res.status(400).json({ success: false, error: 'Name, email, and message are required.' });
     }
 
-    // Direct execution: We know we don't have a database, so go straight to sending the email
+    // 🛠️ Re-create transporter directly inside the route to guarantee fresh Env readings
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com', // Strict fallback to Google
+      port: Number(process.env.SMTP_PORT || 465),     // Strict fallback to Secure Port
+      secure: process.env.SMTP_SECURE === 'true' || !process.env.SMTP_PORT || process.env.SMTP_PORT === '465', 
+      auth: {
+        user: process.env.SMTP_USER || 'benasifiwe5@gmail.com',
+        pass: process.env.SMTP_PASS, // Fetched from Render Dashboard
+      },
+      timeout: 10000 // 10 seconds timeout limit so it never freezes your backend app
+    });
+
     await transporter.sendMail({
-      from: process.env.SMTP_FROM || process.env.SMTP_USER,
-      to: process.env.CONTACT_TO || process.env.SMTP_USER,
-      replyTo: email, // Clicking 'Reply' in your inbox goes straight back to the user!
+      from: process.env.SMTP_FROM || 'benasifiwe5@gmail.com',
+      to: process.env.CONTACT_TO || 'benasifiwe5@gmail.com',
+      replyTo: email,
       subject: subject ? `💼 Portfolio Contact: ${subject}` : `💼 New Message from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
       html: `
@@ -84,7 +76,7 @@ app.post('/api/contact', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Mail dispatch failed:', error.message);
-    return res.status(500).json({ success: false, error: 'Failed to send message. Please try again later.' });
+    return res.status(500).json({ success: false, error: `Server Email Error: ${error.message}` });
   }
 });
 
@@ -93,5 +85,8 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: 'API route not found.' });
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`📡 Server running completely clean on port ${PORT}`));
+// 🚀 Crucial Render binding patch
+const PORT = process.env.PORT || 10000; 
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`📡 Server running completely clean on port ${PORT}`);
+});

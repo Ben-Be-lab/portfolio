@@ -17,6 +17,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
+
 // 🔒 Bulletproof Production CORS Configuration
 const allowedOrigins = [
   'http://localhost:5173', // Vite local development

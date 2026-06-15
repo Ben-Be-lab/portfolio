@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaEnvelope, FaMapMarkerAlt, FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa';
 
 // In your React Contact component:
-const API_URL = 'https://your-backend-name.onrender.com/api/contact';
+const API_URL = 'https://portfolio-roux.onrender.com';
 const Contact = () => {
 
   const [formData, setFormData] = useState({
